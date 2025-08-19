@@ -1,0 +1,76 @@
+codigo:
+
+%%
+"colour" { printf("color"); }
+"flavour" { printf("flavor"); }
+"clever" { printf("smart"); }
+"smart" { printf("elegant"); }
+"conservative" { printf("liberal"); }
+… lots of other words …
+. { printf("%s", yytext); }
+%%
+
+Pregunta: Convierta la calculadora en una calculadora hexadecimal que acepte números hexadecimales y decimales.
+
+Instrucciones:
+-Agregue un patrón como '0x[a-f0-9]+' en el escáner para identificar números hexadecimales.
+-Use 'strtol' en el código de acción para convertir la cadena en un número y almacenarlo en 'yylval'.
+-Asegúrese de que la calculadora devuelva un token 'NUMBER'.
+-Ajuste la salida 'printf' para mostrar los resultados en formatos decimales y hexadecimales.
+
+Se reconocerán tanto los números decimales como los hexadecimales. Posteriormente,
+la entrada será fragmentada en tokens que puedan ser entendidos y aceptados por el parser.
+
+%{
+#include "y.tab.h"
+#include <stdlib.h>
+%}
+%%
+0x[0-9a-fA-F]+   { yylval = strtol(yytext, NULL, 16); return NUMBER; }
+[0-9]+           { yylval = atoi(yytext); return NUMBER; }
+"+"              { return ADD; }
+"-"              { return SUB; }
+"*"              { return MUL; }
+"/"              { return DIV; }
+"abs"            { return ABS; }
+\n               { return EOL; }
+[ \t]            {}
+.                {}
+%%
+int yywrap(void) 
+{ 
+return 1; 
+}
+
+Cuando se ingresa un número, el analizador lo interpreta como un token NUMBER,
+que luego es transformado internamente en un valor entero mediante la función strtol.
+
+%{
+#include <stdio.h>
+#include <stdlib.h>
+%}
+%token NUMBER
+%token ADD SUB MUL DIV ABS
+%token EOL
+%%
+calclist:
+  | calclist exp EOL { printf("= %d (0x%X)\n", $2, $2); }
+  ;
+exp: factor
+  | exp ADD factor { $$ = $1 + $3; }
+  | exp SUB factor { $$ = $1 - $3; }
+  ;
+factor: term
+  | factor MUL term { $$ = $1 * $3; }
+  | factor DIV term { $$ = $1 / $3; }
+  ;
+term: NUMBER
+  | ABS term { $$ = $2 >= 0 ? $2 : -$2; }
+  ;
+%%
+int main(void) {
+    return yyparse();
+}
+void yyerror(char *s) {
+    fprintf(stderr, "error: %s\n", s);
+}
