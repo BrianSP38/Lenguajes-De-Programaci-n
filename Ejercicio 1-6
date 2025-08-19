@@ -1,0 +1,6 @@
+Reescriba el programa de conteo de palabras en C. Ejecute algunos archivos grandes en ambas versiones.
+¿Es la versión C notablemente más rápida? ¿Fue mucho más difícil de depurar?
+
+La implementación del algoritmo en Flex resultó más sencilla que en C, ya que en Flex las reglas de producción permiten abarcar una mayor variedad de casos.
+Sin embargo, en cuanto a rendimiento, C ofrece una ejecución más rápida, pues procesa cada carácter en el momento en que se lee,
+mientras que Flex primero analiza toda la cadena antes de interpretar sus caracteres. Esto hace que la velocidad en C sea significativamente superior.
