@@ -1,0 +1,26 @@
+Codigo: 
+
+/* just like Unix wc */
+%{
+int chars = 0;
+int words = 0;
+int lines = 0;
+%}
+%%
+[a-zA-Z]+ { words++; chars += strlen(yytext); }
+\n { chars++; lines++; }
+. { chars++; }
+%%
+main(int argc, char **argv)
+{
+ yylex();
+ printf("%8d%8d%8d\n", lines, words, chars);
+}
+
+Pregunta: ¿La calculadora aceptará una línea que contenga solo un comentario? ¿Por qué no? ¿Sería más fácil corregir esto en el escáner o analizador?
+
+En el caso de la calculadora del ejemplo número 5, se observa que el analizador léxico descarta los comentarios y no envía ningún token al parser.
+Como consecuencia, el parser no recibe nada que procesar y la entrada queda sin ser interpretada. Esto hace que la calculadora no realice ninguna operación,
+ya que no se ejecutó ningún procesamiento. La forma más sencilla de resolver este inconveniente es en el escáner,
+puesto que actúa sobre los datos antes de ser interpretados;nbasta con añadir una regla que identifique las líneas que contienen
+únicamente comentarios y que estas se traten como líneas vacías dentro del parser.
